@@ -1,7 +1,5 @@
 local M = {}
 
-local pjob = require("plenary.job")
-
 M.config = {}
 
 local function create_autocmds(event, path, commands)
