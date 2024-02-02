@@ -71,6 +71,29 @@ function M.run_without(cmd, ...)
   M.setup()
 end
 
+vim.api.nvim_create_user_command("ADCDisable",
+  function()
+    M.disable()
+      end, {
+  })
+
+vim.api.nvim_create_user_command("ADCEnable",
+  function()
+    if M.augroup then
+      error("AutoDirCmds is already enabled")
+      return
+    end
+    M.setup()
+      end, {
+  })
+
+vim.api.nvim_create_user_command("ADCRunWithout",
+  function(opts)
+    M.run_without(opts.args)
+      end, {
+    nargs = "+",
+  })
+
 function M.setup(user_opts)
 
 	M.config = vim.tbl_deep_extend("force", M.config, user_opts or {})
