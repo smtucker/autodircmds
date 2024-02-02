@@ -2,6 +2,9 @@ local M = {}
 
 M.config = {}
 
+---@param event string The event to listen for
+---@param path string Already expanded path to supply as pattern
+---@param commands string|function|string[]|function[] The vim command(s) or lua function(s)
 local function create_autocmds(event, path, commands)
 	if type(commands) ~= "table" then
 		commands = { commands }
@@ -44,11 +47,16 @@ local function parse_path_config(dir)
 	end
 end
 
+--- Deletes all autocmds and the augroup
 function M.disable()
   vim.api.nvim_del_augroup_by_id(M.augroup)
   M.augroup = nil
 end
 
+--- Runs a command without any autodircmds applied
+--- First runs M.disable(), then runs the command, then runs M.setup()
+---@param cmd string|function Either a vim command string or a lua function
+---@param ... any Optional arguments to pass to the function
 function M.run_without(cmd, ...)
   if not M.augroup then
     error("AutoDirCmds is not enabled")
