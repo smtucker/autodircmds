@@ -51,6 +51,7 @@ function M.setup(user_opts)
       parse_path_config(dir)
     end
   end
+	M.config = vim.tbl_deep_extend("force", M.config, user_opts or {})
 end
 
 return M
