@@ -44,6 +44,25 @@ local function parse_path_config(dir)
 	end
 end
 
+function M.disable()
+  vim.api.nvim_del_augroup_by_id(M.augroup)
+  M.augroup = nil
+end
+
+function M.run_without(cmd, ...)
+  if not M.augroup then
+    error("AutoDirCmds is not enabled")
+    return
+  end
+  M.disable()
+  if type(cmd) == "function" then
+    cmd(...)
+  else
+    vim.cmd(cmd)
+  end
+  M.setup()
+end
+
 function M.setup(user_opts)
 
 	M.config = vim.tbl_deep_extend("force", M.config, user_opts or {})
