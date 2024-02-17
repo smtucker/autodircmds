@@ -24,9 +24,8 @@ local function create_autocmds(event, path, commands)
 	end
 end
 
-local function parse_path_config(dir)
-	local path = dir[1] or dir.path
-	path = vim.fn.expand(path)
+local function parse_path_config(dir, config)
+	local path = vim.fn.expand(dir)
 	if path:sub(-1) == "/" then
 		path = path .. "*"
 	elseif path:sub(-2) ~= "/*" then
@@ -34,17 +33,13 @@ local function parse_path_config(dir)
 	end
 
 	if not path then
-		vim.notify("No path specified for autocmds")
+		vim.notify("Error parsing path for autocmds")
 		return
 	end
 
-	if dir.postwrite then
-		create_autocmds("BufWritePost", path, dir.postwrite)
-	end
-
-	if dir.preopen then
-		create_autocmds("BufReadPre", path, dir.preopen)
-	end
+  for event, cmd in pairs(config) do
+    create_autocmds(event, path, cmd)
+  end
 end
 
 --- Deletes all autocmds and the augroup
@@ -101,8 +96,8 @@ function M.setup(user_opts)
   M.augroup = vim.api.nvim_create_augroup("AutoDirCmds", {clear = true})
 
 	if M.config.dirs then
-		for _, dir in ipairs(M.config.dirs) do
-			parse_path_config(dir)
+		for dir, config in pairs(M.config.dirs) do
+			parse_path_config(dir, config)
 		end
 	end
 end
